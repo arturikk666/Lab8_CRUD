@@ -10,6 +10,7 @@ namespace Lab8_CRUD
     public partial class Form1 : Form
     {
         // ВНИМАНИЕ! Проверьте строку подключения!
+        // Если ваш сервер называется иначе (например, (localdb)\MSSQLLocalDB), измените Data Source.
         string connectionString = @"Data Source=MSI\SQLEXPRESS;Initial Catalog=StudentDB;Integrated Security=True;";
 
         int selectedId = -1;
@@ -19,8 +20,6 @@ namespace Lab8_CRUD
             InitializeComponent();
 
             // Привязываем события к кнопкам и таблице
-            // Строка this.Load += Form1_Load; УДАЛЕНА, так как она уже прописана в Form1.Designer.cs
-
             dataGridViewStudents.SelectionChanged += DataGridViewStudents_SelectionChanged;
             buttonAdd.Click += ButtonAdd_Click;
             buttonUpdate.Click += ButtonUpdate_Click;
@@ -28,10 +27,13 @@ namespace Lab8_CRUD
             buttonClear.Click += ButtonClear_Click;
             buttonExport.Click += ButtonExport_Click;
             buttonCancel.Click += ButtonCancel_Click;
+
+            // Привязка новой кнопки поиска (чтобы не кликать дважды по форме)
+            buttonSearch.Click += buttonSearch_Click;
         }
 
         // ==================== 1. ЗАГРУЗКА ДАННЫХ (READ) ====================
-        // Обратите внимание: этот метод уже привязан через конструктор формы
+        // Обратите внимание: этот метод уже привязан через конструктор формы (Form1.Designer.cs)
         private void Form1_Load(object sender, EventArgs e)
         {
             LoadData();
@@ -59,7 +61,7 @@ namespace Lab8_CRUD
             }
         }
 
-        // Счетчик студентов (Самостоятельное задание)
+        // Счетчик студентов
         private void UpdateStatus(int count)
         {
             labelStatus.Text = $"Всего студентов: {count}";
@@ -98,7 +100,7 @@ namespace Lab8_CRUD
                 {
                     conn.Open();
 
-                    // Поиск перед добавлением (Самостоятельное задание)
+                    // Поиск перед добавлением (проверка на дубликат ФИО)
                     string checkQuery = "SELECT COUNT(*) FROM Students WHERE FullName = @name";
                     using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
                     {
@@ -211,6 +213,39 @@ namespace Lab8_CRUD
             }
         }
 
+        // ==================== ПОИСК (SEARCH) ====================
+        private void buttonSearch_Click(object sender, EventArgs e)
+        {
+            // Если поле поиска пустое — показываем всех студентов
+            if (string.IsNullOrWhiteSpace(textBoxSearch.Text))
+            {
+                LoadData();
+                return;
+            }
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    // Ищем частичное совпадение по ФИО
+                    string query = "SELECT * FROM Students WHERE FullName LIKE @name";
+                    SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+                    adapter.SelectCommand.Parameters.AddWithValue("@name", "%" + textBoxSearch.Text.Trim() + "%");
+
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    dataGridViewStudents.DataSource = dt;
+                    UpdateStatus(dt.Rows.Count);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при поиске: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         // ==================== ОЧИСТКА ПОЛЕЙ ====================
         private void ButtonClear_Click(object sender, EventArgs e)
         {
@@ -265,11 +300,6 @@ namespace Lab8_CRUD
             LoadData();
             ClearFields();
             MessageBox.Show("Изменения отменены. Данные перезагружены.", "Отмена", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void numericGrade_ValueChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

@@ -35,6 +35,7 @@
             this.labelStatus = new System.Windows.Forms.Label();
             this.buttonSearch = new System.Windows.Forms.Button();
             this.textBoxSearch = new System.Windows.Forms.TextBox();
+            this.buttonShowLog = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewStudents)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericAge)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericGrade)).BeginInit();
@@ -200,11 +201,21 @@
             this.textBoxSearch.Size = new System.Drawing.Size(90, 20);
             this.textBoxSearch.TabIndex = 17;
             // 
+            // buttonShowLog
+            // 
+            this.buttonShowLog.Location = new System.Drawing.Point(620, 360);
+            this.buttonShowLog.Name = "buttonShowLog";
+            this.buttonShowLog.Size = new System.Drawing.Size(100, 30);
+            this.buttonShowLog.TabIndex = 18;
+            this.buttonShowLog.Text = "Показать лог";
+            this.buttonShowLog.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 461);
+            this.Controls.Add(this.buttonShowLog);
             this.Controls.Add(this.textBoxSearch);
             this.Controls.Add(this.buttonSearch);
             this.Controls.Add(this.labelStatus);
@@ -255,5 +266,6 @@
         private System.Windows.Forms.Label labelStatus;
         private System.Windows.Forms.Button buttonSearch;
         private System.Windows.Forms.TextBox textBoxSearch;
+        private System.Windows.Forms.Button buttonShowLog;
     }
 }
